@@ -5,17 +5,12 @@ from sklearn.metrics import balanced_accuracy_score, confusion_matrix
 
 DECISION_T = 0.5
 
-def selective_pool(group, num_imgs, dataset,
+def selective_pool(group, num_imgs,
                    t_low, t_high,
-                   min_conf_imgs,
                    img_idx=None):
 
     # Image selection
-    if img_idx:
-        if num_imgs < 4 and dataset == "mBRSET":
-            group = group.iloc[img_idx]
-        if num_imgs < 2 and dataset == "BRSET":
-            group = group.iloc[img_idx]
+    group = group.iloc[img_idx]
 
     confident = (group["prob"] <= t_low) | (group["prob"] >= t_high)
     confident_probs = group.loc[confident, "prob"]
@@ -39,14 +34,14 @@ def selective_pool(group, num_imgs, dataset,
 def compute_perf_metrics(df_val_eval,
                          t_low, t_high,
                          p_low, p_high,
-                         num_imgs, dataset,
-                         img_idx=None):
+                         num_imgs,
+                         img_idx=None): 
 
     df_eye = (
         df_val_eval
         .groupby("patient")
         .apply(lambda g: selective_pool(
-            g, num_imgs, dataset,
+            g, num_imgs,
             t_low, t_high, img_idx
         ))
         .reset_index()
