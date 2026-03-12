@@ -102,7 +102,7 @@ fundus_dataset.py:
 Implements the PyTorch dataset used to load retinal images. Handles reading images, applying transforms, and returning tensors and labels.
 
 img_quality_train_val.py:
-Contains training and evaluation utilities for the image quality classifier, including training loops, validation functions, and threshold selection.
+Contains training and evaluation for the image quality classifier.
 
 diagnosis_train_eval.py:
 Implements training and evaluation functions for the diabetic retinopathy diagnosis model and computes metrics such as balanced accuracy, F1 score, and AUC.
