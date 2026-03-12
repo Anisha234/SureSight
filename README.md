@@ -123,4 +123,15 @@ multi_image_fusion.ipynb:
 Notebook used to evaluate different multi-image prediction fusion strategies. 
 
 ## Main Conclusions
+## Results
+
+### Coverage vs Balanced Accuracy (BRSET and mBRSET respectively)
+
+<p align="center">
+<img src="figures/coverage_accuracy_result.png" width="600">
+</p>
+<p align="center">
+Compared to the RETFound-Green baseline at 100% coverage (87% BA on BRSET, 85% on mBRSET), SureSight achieves +3% and +9% balanced accuracy gains respectively at 100% coverage, and reaches over 97% BA on both datasets at 70% coverage.
+</p> 
+
 
