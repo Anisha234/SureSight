@@ -18,7 +18,7 @@ to improve diagnostic reliability while allowing uncertain cases to be deferred 
 
 Automated DR screening is especially valuable in settings where access to ophthalmological care is limited.
 
-However, real-world fundus images can vary in illumination, focus, artifacts, positioning, lesion visibility
+However, real-world fundus images can vary in illumination, focus, artifacts, positioning, and lesion visibility.
 
 Traditional pipelines often use a separate image-quality classifier to reject poor-quality images. SureSight instead uses the diagnostic model's own confidence to determine whether a prediction is reliable.
 
@@ -75,7 +75,7 @@ Multi-image fusion methods evaluated include:
 
 ### mBRSET
 
-Mobile Brazilian Multilabel Ophthalmological Dataset
+Mobile Brazilian Multilabel Ophthalmological Dataset:
 
 - 5,164 original fundus images
 - smartphone-based retinal imaging
@@ -83,12 +83,14 @@ Mobile Brazilian Multilabel Ophthalmological Dataset
 
 ### BRSET
 
-Brazilian Multilabel Ophthalmological Dataset
+Brazilian Multilabel Ophthalmological Dataset:
 
 - 16,266 original fundus images
 - tabletop clinical retinal imaging
 - two images per patient
+
 ---
+
 ## Model
 
 SureSight uses **RETFoundGreen**, a lightweight retinal foundation model based on a Vision Transformer.
@@ -99,18 +101,17 @@ The full fusion model contains approximately **25M parameters**, including appro
 
 ## Results
 
-
 Transformer fusion consistently outperformed the single-image baseline and simple probability fusion.
 
 ### mBRSET Results
 
-![mBRSET results](figures/mbrset graph .png)
+![mBRSET results](figures/mbrset_graph.png)
 
 ### BRSET Results
 
-![BRSET results](figures/brset graph .png)
+![BRSET results](figures/brset_graph.png)
 
-## Main Findings
+---
 
 ## Main Findings
 
