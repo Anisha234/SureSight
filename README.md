@@ -1,137 +1,112 @@
 # SureSight
+
 ## Confidence-Guided Multi-Image Fusion for Diabetic Retinopathy Screening
 
-SureSight is a deep learning pipeline for reliable diabetic retinopathy (DR) screening from retinal fundus images, designed for deployment on mobile retinal imaging devices.
+SureSight is a lightweight deep learning framework for diabetic retinopathy (DR) screening from retinal fundus images.
 
-The system integrates:
+The system combines:
 
-- confidence-aware image filtering  
-- multi-image prediction fusion  
-- patient-level confidence decisions  
+- RETFoundGreen retinal image encoding
+- transformer-based multi-image fusion
+- patient-level confidence-guided prediction
 
-to improve diagnostic reliability when screening patients using smartphone-based retinal cameras.
-
-This approach is designed for real-world screening environments where image quality may vary significantly and reliable automated diagnosis is critical.
+to improve diagnostic reliability while allowing uncertain cases to be deferred for additional imaging or review.
 
 ---
 
 ## Motivation
 
-Early screening for diabetic retinopathy is critical because many eye diseases progress asymptomatically until irreversible vision loss occurs. A large proportion of global blindness occurs in low- and middle-income regions, where access to specialized ophthalmological care is limited.
+Automated DR screening is especially valuable in settings where access to ophthalmological care is limited.
 
-Recent AI models show strong performance on curated datasets but often struggle when deployed in real screening settings due to:
+However, real-world fundus images can vary in illumination, focus, artifacts, positioning, lesion visibility
 
-- blur and motion artifacts  
-- uneven illumination  
-- occlusions  
-- variability in image capture  
-
-SureSight addresses this by combining confidence-aware filtering and multi-image fusion to produce more reliable patient-level predictions.
+Traditional pipelines often use a separate image-quality classifier to reject poor-quality images. SureSight instead uses the diagnostic model's own confidence to determine whether a prediction is reliable.
 
 ---
 
-## SureSight Pipeline
+## Pipeline
 
-The SureSight system processes retinal images through several stages.
+### 1. Image Encoding
 
-### Image-Level Prediction
+Each retinal image is processed using a shared RETFoundGreen vision encoder to produce an image embedding.
 
-Each fundus image is passed through a diagnosis model that outputs a probability of diabetic retinopathy.
+### 2. Multi-Image Fusion
 
-### Image Confidence Filtering
+Embeddings from multiple fundus images of the same patient are combined using a **two-layer transformer encoder**.
 
-Images are retained only if the model prediction is confident toward either class.  
-Low-confidence images are discarded.
+The transformer supports variable numbers of input images through masking.
 
-### Multi-Image Fusion
+### 3. Patient-Level Prediction
 
-If multiple retinal images are available for a patient, predictions are aggregated using mean probability fusion.
+The fused representation produces a single patient-level probability of diabetic retinopathy.
 
+### 4. Confidence-Guided Deferral
 
+Predictions are accepted only when sufficiently far from the decision boundary at 0.5:
 
-This reduces the impact of noisy predictions and improves overall reliability.
+`p < 0.5 - T` or `p > 0.5 + T`
 
-### Patient-Level Decision
+Low-confidence patients are deferred rather than assigned an unreliable diagnosis.
 
-A final diagnosis is produced only when the aggregated patient probability is sufficiently confident.
+---
 
-If the system is not confident, additional images can be captured during screening.
+## Compared Methods
+
+SureSight evaluates three main strategies:
+
+1. **Image-quality cascade**  
+   A separate quality model filters images before DR diagnosis.
+
+2. **Single-image confidence filtering**  
+   Predictions are accepted or rejected using the DR model's confidence.
+
+3. **Confidence-guided multi-image fusion**  
+   Multiple images are fused before applying patient-level confidence filtering.
+
+Multi-image fusion methods evaluated include:
+
+- mean probability fusion
+- max probability fusion
+- transformer-based fusion
 
 ---
 
 ## Datasets
 
-SureSight is designed to work with retinal datasets such as:
-
 ### mBRSET
+
 Mobile Brazilian Multilabel Ophthalmological Dataset
 
-- 5,164 fundus images  
-- 1,291 patients  
-- Images captured using smartphone-based retinal cameras
+- 5,164 original fundus images
+- smartphone-based retinal imaging
+- four images per patient
 
 ### BRSET
+
 Brazilian Multilabel Ophthalmological Dataset
 
-- 16,266 clinical fundus images  
-- 8,524 patients  
-
-Data is split at the patient level to prevent leakage between training and validation sets.
-
+- 16,266 original fundus images
+- tabletop clinical retinal imaging
+- two images per patient
 ---
-
 ## Model
 
-SureSight uses **RETFound-Green**, a retinal foundation model trained on large retinal datasets and optimized for efficient inference.
+SureSight uses **RETFoundGreen**, a lightweight retinal foundation model based on a Vision Transformer.
 
-The model is fine-tuned for:
-
-- diabetic retinopathy diagnosis  
-- image quality classification  
-
-The same backbone architecture is used for both tasks.
+The full fusion model contains approximately **25M parameters**, including approximately **3.6M parameters** in the multi-image transformer.
 
 ---
 
-## Repository Files
-
-model.py:
-Defines the neural network architecture used in the project. The UnifiedBackbone class wraps the RETFound backbone with a classification head and is used for both image quality classification and diabetic retinopathy diagnosis.
-
-fundus_dataset.py:
-Implements the PyTorch dataset used to load retinal images. Handles reading images, applying transforms, and returning tensors and labels.
-
-img_quality_train_val.py:
-Contains training and evaluation for the image quality classifier.
-
-diagnosis_train_eval.py:
-Implements training and evaluation functions for the diabetic retinopathy diagnosis model and computes metrics such as balanced accuracy, F1 score, and AUC.
-
-multi_image_val_test.py:
-Provides utilities for evaluating multi-image fusion methods and aggregating predictions across multiple retinal images from the same patient.
-
-LoadAndProcessingBRSET.ipynb:
-Notebook used for dataset preprocessing and patient-level data splitting for the BRSET dataset.
-
-train_disease_diagnosis_model.ipynb:
-Notebook used to train the diabetic retinopathy diagnosis model.
-
-img_quality_diagnosis_cascade.ipynb:
-Runs the cascaded pipeline experiment where the image quality model filters images before they are passed to the diagnosis model.
-
-multi_image_fusion.ipynb:
-Notebook used to evaluate different multi-image prediction fusion strategies. 
-
-## Main Conclusions
 ## Results
 
-### Coverage vs Balanced Accuracy (BRSET and mBRSET respectively)
-
-<p align="center">
-<img src="figures/coverage_accuracy_result.png" width="600">
-</p>
-<p align="center">
-Compared to the RETFound-Green baseline at 100% coverage (87% BA on BRSET, 85% on mBRSET), SureSight achieves +3% and +9% balanced accuracy gains respectively at 100% coverage, and reaches over 97% BA on both datasets at 70% coverage.
-</p> 
+Transformer fusion consistently outperformed the single-image baseline and simple probability fusion.
 
 
+## Main Findings
+
+- Multi-image fusion improves patient-level DR prediction over single-image inference.
+- Transformer fusion performs better overall than mean or max probability fusion.
+- Model-confidence filtering consistently outperforms explicit image-quality filtering.
+- Human image-quality labels are only weakly associated with downstream diagnostic performance.
+- Increasing the number of available images improves the accuracy-coverage tradeoff.
+- SureSight requires only one inference pass per image and can operate fully offline, supporting mobile deployment.
