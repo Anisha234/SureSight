@@ -99,8 +99,19 @@ The full fusion model contains approximately **25M parameters**, including appro
 
 ## Results
 
+## Results
+
 Transformer fusion consistently outperformed the single-image baseline and simple probability fusion.
 
+### mBRSET Results
+
+![mBRSET results](figures/mBRSET_graph.png)
+
+### BRSET Results
+
+![BRSET results](figures/brset_graph.png)
+
+## Main Findings
 
 ## Main Findings
 
