@@ -105,12 +105,13 @@ Transformer fusion consistently outperformed the single-image baseline and simpl
 
 ### mBRSET Results
 
-![mBRSET results](figures/mbrset_graph.png)
+![mBRSET results](figures/mbrset%20graph%20.png)
 
 ### BRSET Results
 
-![BRSET results](figures/brset_graph.png)
+![BRSET results](figures/brset%20graph%20.png)
 
+## Main Findings
 ---
 
 ## Main Findings
